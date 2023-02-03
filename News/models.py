@@ -43,7 +43,7 @@ class Post(models.Model):
     author = models.ForeignKey('Author', on_delete=models.CASCADE)
     news_article = models.CharField(max_length=20, default=news)
     time_in = models.DateTimeField(auto_now_add=True)
-    category_com = models.ManyToManyField('Category', through='PostCategory')
+    category_com = models.ManyToManyField(to='Category', through='PostCategory', related_name='news',)
     title_news = models.CharField(max_length=50, default='Сенсация')
     text_news = models.TextField(default='Когда политики всех стран наконец то договорятся о мире?')
     rating = models.FloatField(default=2.5)
@@ -60,6 +60,9 @@ class Post(models.Model):
 
     def preview(self):
         return f'{self.text_news[:124]}...'
+
+    def __str__(self):
+        return f'{self.title_news.title()}: {self.text_news}'
 
 
 class PostCategory(models.Model):
