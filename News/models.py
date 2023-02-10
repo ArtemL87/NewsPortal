@@ -41,11 +41,11 @@ class Post(models.Model):
     article = 'статья'
 
     author = models.ForeignKey('Author', on_delete=models.CASCADE)
-    news_article = models.CharField(max_length=20, default=news)
+    news_article = models.CharField(max_length=20)
     time_in = models.DateTimeField(auto_now_add=True)
-    category_com = models.ManyToManyField(to='Category', through='PostCategory', related_name='news',)
-    title_news = models.CharField(max_length=50, default='Сенсация')
-    text_news = models.TextField(default='Когда политики всех стран наконец то договорятся о мире?')
+    category_com = models.ManyToManyField(to='Category', through='PostCategory', related_name='news')
+    title_news = models.CharField(max_length=50)
+    text_news = models.TextField()
     rating = models.FloatField(default=2.5)
 
     def like(self):
