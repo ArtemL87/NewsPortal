@@ -77,15 +77,12 @@ class NewsUpdate(UpdateView):
     success_url = reverse_lazy('post_list')
 
 
-
 # Представление удаляющее новости
 class NewsDelete(DeleteView):
-    # form_class = NewsDeleteForm
     model = Post
     template_name = 'post_delete.html'
     def form_valid(self, form):
-        # news = form.save(commit=False)
-        if news.news_article == 'новость':
+        if 'news/' in self.request.path and self.object.news_article == 'новость':
             return super().form_valid(form)
     success_url = reverse_lazy('post_list')
 
@@ -118,13 +115,13 @@ class ArticleUpdate(UpdateView):
 
 # Представление удаляющее статьи
 class ArticleDelete(DeleteView):
-    # form_class = ArticleDeleteForm
     model = Post
     template_name = 'post_delete.html'
     def form_valid(self, form):
-        news = form.save(commit=False)
-        if news.news_article == 'статья':
+        # article = form.save(commit=False)
+        if 'articles/' in self.request.path and self.object.news_article == 'статья':
             return super().form_valid(form)
+        return render(request)
     success_url = reverse_lazy('post_list')
 
 
