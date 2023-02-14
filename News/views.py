@@ -3,7 +3,9 @@ from django.shortcuts import render
 # что в этом представлении мы будем выводить список объектов из БД
 from django.urls import reverse_lazy
 from django.views.generic import \
-    ListView, DetailView, CreateView, UpdateView, DeleteView
+    ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 from .models import Post
 from .filters import PostFilter
 from .forms import NewsForm, ArticleForm, NewsDeleteForm, ArticleDeleteForm
@@ -66,6 +68,7 @@ class NewsCreate(CreateView):
 
 
 # представление для изменения новости
+@method_decorator(login_required(login_url = '/accounts/login/'), name='dispatch')
 class NewsUpdate(UpdateView):
     form_class = NewsForm
     model = Post
@@ -102,6 +105,7 @@ class ArticleCreate(CreateView):
 
 
 # представление для изменения статьи
+@method_decorator(login_required(login_url = '/accounts/login/'), name='dispatch')
 class ArticleUpdate(UpdateView):
     form_class = ArticleForm
     model = Post

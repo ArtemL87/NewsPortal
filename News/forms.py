@@ -15,9 +15,7 @@ class NewsForm(forms.ModelForm):
         text_news = cleaned_data.get("text_news")
         title_news = cleaned_data.get("title_news")
         if title_news == text_news:
-            raise ValidationError(
-                "Новость не должно быть идентично названию новости."
-            )
+            raise ValidationError("Новость не должно быть идентично названию новости.")
         return cleaned_data
 
 

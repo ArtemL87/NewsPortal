@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-p(uxa(5^psp7@%709mdco9cw)ab9=hx5!gshylcr!khow^5bhg
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition
@@ -42,7 +42,13 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.flatpages',
     'News',
-    'django_filters'
+    'django_filters',
+    'sign',
+    'protect',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
 
 SITE_ID = 1
@@ -70,10 +76,15 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.request'
             ],
         },
     },
 ]
+
+LOGIN_URL = '/accounts/login/'
+# 'sign/login/'
+LOGIN_REDIRECT_URL = '/'
 
 WSGI_APPLICATION = 'NewsPortal.wsgi.application'
 
@@ -133,3 +144,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATICFILES_DIRS = [
     BASE_DIR / "static"
 ]
+
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_FORMS = {'signup': 'sign.models.BasicSignupForm'}
+
+
