@@ -6,6 +6,8 @@ from django.views.generic import \
     ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.views.generic.edit import CreateView, View
 from .models import Post
 from .filters import PostFilter
 from .forms import NewsForm, ArticleForm, NewsDeleteForm, ArticleDeleteForm
@@ -54,7 +56,8 @@ class PostDetail(DetailView):
 
 
 # представление для создания новости
-class NewsCreate(CreateView):
+class NewsCreate(CreateView, PermissionRequiredMixin):
+    permission_required = ('news.add_post',)
     form_class = NewsForm
     model = Post
     template_name = 'post_edit.html'
@@ -69,7 +72,8 @@ class NewsCreate(CreateView):
 
 # представление для изменения новости
 @method_decorator(login_required(login_url = '/accounts/login/'), name='dispatch')
-class NewsUpdate(UpdateView):
+class NewsUpdate(UpdateView, PermissionRequiredMixin):
+    permission_required = ('news.change_post',)
     form_class = NewsForm
     model = Post
     template_name = 'post_edit.html'
@@ -91,7 +95,8 @@ class NewsDelete(DeleteView):
 
 
 # представление для создания статьи
-class ArticleCreate(CreateView):
+class ArticleCreate(CreateView, PermissionRequiredMixin):
+    permission_required = ('news.add_post',)
     form_class = ArticleForm
     model = Post
     template_name = 'post_edit.html'
@@ -106,7 +111,8 @@ class ArticleCreate(CreateView):
 
 # представление для изменения статьи
 @method_decorator(login_required(login_url = '/accounts/login/'), name='dispatch')
-class ArticleUpdate(UpdateView):
+class ArticleUpdate(UpdateView, PermissionRequiredMixin):
+    permission_required = ('news.change_post',)
     form_class = ArticleForm
     model = Post
     template_name = 'post_edit.html'
@@ -127,6 +133,7 @@ class ArticleDelete(DeleteView):
             return super().form_valid(form)
         return render(request)
     success_url = reverse_lazy('post_list')
+
 
 
 # # Create your views here.
