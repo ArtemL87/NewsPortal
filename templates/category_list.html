@@ -6,54 +6,27 @@
 
 <!-- Название у нас будет products -->
 {% block title %}
-News
+Category
 {% endblock title %}
 
 <!-- В контенте на странице мы выводим все товары -->
 {% block content %}
-    <h1>Все новости</h1>
+    <h1>Категории</h1>
+        {% if is_not_subscriber %}
+            <p class="text-center"><a href="{% url 'subscribe' category.id %}" class="btn btn-secondary btn-sm">Подписаться</a></p>
+        {% endif %}
     <hr>
-    <form action="" method="get">
-        <label for="start">Start date:</label>
 
-        <input type="date" id="start" name="trip-start"
-        value="2023-01-01"
-        min="2022-01-01" max="2024-12-31">
-        {{ filterset.form.as_p }}
-        <input type="submit" value="Найти" />
-        {% for obj in filter.qs %}
-        {{ obj.time_in }}<br />
-        {% endfor %}
-   </form>
     <hr>
-    {% if news %}
-        <table>
+
+    <table>
+        {% for category in category_list %}
             <tr>
-                <td>Заголовок</td>
-                <td> | </td>
-                <td>Дата публикации</td>
-                <td> | </td>
-                <td>Краткое содержание</td>
-                <td> | </td>
-                <td>Категория</td>
+                <td><a href="{% url 'category_list' category_com.id %}">{{ category_com.category }}</a></td>
             </tr>
+        {% endfor %}
 
-            {% for new in news %}
-                <tr>
-                    <td>{{ new.title_news|censor }}</td>
-                    <td> | </td>
-                    <td>{{ new.time_in|date:'d M Y'}}</td>
-                    <td> | </td>
-                    <td>{{ new.text_news|truncatewords:20|censor}}</td>
-                    <td> | </td>
-                    <td>{{ new.category_com.all__name }}</td>
-                </tr>
-            {% endfor %}
-
-        </table>
-    {% else %}
-        <h2>Новостей нет</h2>
-    {% endif %}
+    </table>
 
     {# Добавляем пагинацию на страницу #}
 

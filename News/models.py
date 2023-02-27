@@ -1,4 +1,5 @@
 from django.db import models
+
 from datetime import datetime
 
 
@@ -34,6 +35,7 @@ class Author(models.Model):
 
 class Category(models.Model):
     category = models.CharField(max_length=20, unique=True)
+    subscribers = models.ManyToManyField(User, related_name='categories')
 
 
 class Post(models.Model):
@@ -61,8 +63,12 @@ class Post(models.Model):
     def preview(self):
         return f'{self.text_news[:124]}...'
 
+
     def __str__(self):
         return f'{self.title_news.title()}: {self.text_news}'
+
+    def get_absolute_url(self):
+        return f'/post/{self.id}'
 
 
 class PostCategory(models.Model):
@@ -86,5 +92,6 @@ class Comment(models.Model):
         if self.rating > 0.0:
             self.rating -= 0.1
             self.save()
+
 
 # Create your models here.

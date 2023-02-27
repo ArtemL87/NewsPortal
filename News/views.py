@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, reverse, redirect, get_object_or_404
 # Импортируем класс, который говорит нам о том,
 # что в этом представлении мы будем выводить список объектов из БД
 from django.urls import reverse_lazy
@@ -7,10 +7,13 @@ from django.views.generic import \
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.views.generic.edit import CreateView, View
-from .models import Post
+from django.views.generic.edit import CreateView
+from django.core.mail import send_mail, EmailMultiAlternatives, mail_admins
+from django.template.loader import render_to_string
+from datetime import datetime
+from .models import Post, Category
 from .filters import PostFilter
-from .forms import NewsForm, ArticleForm, NewsDeleteForm, ArticleDeleteForm
+from .forms import NewsForm, ArticleForm
 
 
 class PostList(ListView):
@@ -65,7 +68,31 @@ class NewsCreate(CreateView, PermissionRequiredMixin):
     def form_valid(self, form):
         news = form.save(commit=False)
         news.news_article = 'новость'
+        # if request.user in Category.subscribers.all():
+        #     #получаем наш html
+        #     html_content = render_to_string(
+        #         'news_created.html',
+        #         {
+        #             'news':news,
+        #         }
+        #     )
+        #     msg = EmailMultiAlternatives(
+        #         subject=f'{news.title_news}',  # имя клиента и дата записи будут в теме для удобства
+        #         body=f'{news.text_news}',  # сообщение с кратким описанием проблемы
+        #         from_email='artem.l.1987@yandex.ru',
+        #         # здесь указываете почту, с которой будете отправлять (об этом попозже)
+        #         to = ['lordtemik@gmail.com', ]  # здесь список получателей. Например, секретарь, сам врач и т. д.
+        #     )
+        #     msg.attach_alternative(html_content, "text/html")
+        #     msg.send()
+
+        # отправляем письмо всем админам по аналогии с send_mail, только здесь получателя указывать не надо
+        mail_admins(
+            subject=f'{news.title_news}',
+            message=news.text_news,
+        )
         return super().form_valid(form)
+
 
     success_url = reverse_lazy('post_list')
 
@@ -104,6 +131,14 @@ class ArticleCreate(CreateView, PermissionRequiredMixin):
     def form_valid(self, form):
         article = form.save(commit=False)
         article.news_article = 'статья'
+        send_mail(
+            subject=f'{article.title_news}',  # имя клиента и дата записи будут в теме для удобства
+            message=f'{article.text_news}',  # сообщение с кратким описанием проблемы
+            from_email='artem.l.1987@yandex.ru',
+            # здесь указываете почту, с которой будете отправлять (об этом попозже)
+            recipient_list=['lordtemik@gmail.com', ]  # здесь список получателей. Например, секретарь, сам врач и т. д.
+        )
+        return super().form_valid(form)
         return super().form_valid(form)
 
     success_url = reverse_lazy('post_list')
@@ -134,6 +169,29 @@ class ArticleDelete(DeleteView):
         return render(request)
     success_url = reverse_lazy('post_list')
 
+class CategoryListView(ListView):
+    model = Post
+    template_name = 'category_list.html'
+    context_object_name = 'category_list'
+
+    def get_queryset(self):
+        self.category = get_object_or_404(Category, id=self.kwargs['pk'])
+        queryset = Post.objects.filter(category_com=self.category).order_by('-time_in')
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_not_subsriber'] = self.request.user not in self.category.subscribers.all()
+        context['category_com'] = self.category
+        return context
 
 
-# # Create your views here.
+@login_required
+def subscribe(request, pk):
+    user = request.user
+    category = Category.objects.get(id=pk)
+    category.subscribers.add(user)
+
+    message = 'Вы успешно подписались на рассылку новостей категории'
+    return render(request, 'subscribe.html', {'category': category, 'message': message})
+# Create your views here.

@@ -37,19 +37,3 @@ class ArticleForm(forms.ModelForm):
                 "Новость не должно быть идентично названию новости."
             )
         return cleaned_data
-
-class NewsDeleteForm(forms.ModelForm):
-    class Meta:
-        model = Post
-        fields = [
-            'title_news',
-            'text_news',
-            ]
-
-class ArticleDeleteForm(forms.ModelForm):
-    class Meta:
-        model = Post
-        fields = [
-            'title_news',
-            'text_news',
-            ]
