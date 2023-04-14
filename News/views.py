@@ -10,10 +10,22 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.views.generic.edit import CreateView
 from django.core.mail import send_mail, EmailMultiAlternatives, mail_admins
 from django.template.loader import render_to_string
+from django.core.cache import cache # импортируем наш кэш
 from datetime import datetime
 from .models import Post, Category
 from .filters import PostFilter
 from .forms import NewsForm, ArticleForm
+
+from django.utils.translation import gettext as _  # импортируем функцию для перевода
+
+
+# Create your views here.
+
+# class Index(View):
+#     def get(self, request):
+#         string = _('Hello world')
+#
+#         return HttpResponse(string)
 
 
 class PostList(ListView):
@@ -56,6 +68,17 @@ class PostDetail(DetailView):
     template_name = 'post.html'
     # Название объекта, в котором будет выбранный пользователем продукт
     context_object_name = 'news'
+    queryset = Post.objects.all()
+
+    def get_object(self, *args, **kwargs):  # переопределяем метод получения объекта, как ни странно
+        obj = cache.get(f'post-{self.kwargs["pk"]}', None)  # кэш очень похож на словарь, и метод get действует так же. Он забирает значение по ключу, если его нет, то забирает None.
+
+        # если объекта нет в кэше, то получаем его и записываем в кэш
+        if not obj:
+            obj = super().get_object(queryset=self.queryset)
+            cache.set(f'post-{self.kwargs["pk"]}', obj)
+
+        return obj
 
 
 # представление для создания новости

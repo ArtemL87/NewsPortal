@@ -4,6 +4,7 @@ from .views import (
    PostList, PostDetail, NewsCreate, NewsUpdate, NewsDelete, ArticleCreate,
    ArticleUpdate, ArticleDelete, CategoryListView, subscribe
    )
+from django.views.decorators.cache import cache_page
 
 
 urlpatterns = [
