@@ -3,7 +3,7 @@ from django.shortcuts import render, reverse, redirect, get_object_or_404
 # что в этом представлении мы будем выводить список объектов из БД
 from django.urls import reverse_lazy
 from django.views.generic import \
-    ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
+    ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView, View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -11,6 +11,7 @@ from django.views.generic.edit import CreateView
 from django.core.mail import send_mail, EmailMultiAlternatives, mail_admins
 from django.template.loader import render_to_string
 from django.core.cache import cache # импортируем наш кэш
+from django.http import HttpResponse
 from datetime import datetime
 from .models import Post, Category
 from .filters import PostFilter
@@ -19,13 +20,11 @@ from .forms import NewsForm, ArticleForm
 from django.utils.translation import gettext as _  # импортируем функцию для перевода
 
 
-# Create your views here.
+class Index(View):
+    def get(self, request):
+        string = _('Hello world')
 
-# class Index(View):
-#     def get(self, request):
-#         string = _('Hello world')
-#
-#         return HttpResponse(string)
+        return HttpResponse(string)
 
 
 class PostList(ListView):
